@@ -51,14 +51,15 @@ class LibroController implements InterfaceController
         $parametros['genero'] = GeneroDAO::encontrarUno($parametros['id_genero']);
         $parametros['categoria'] = CategoriaDAO::encontrarUno($parametros['id_categoria']);
         $parametros['editorial'] = EditorialDAO::encontrarUno($parametros['id_editorial']);
-        foreach ($parametros['autor'] as $autor) {
-            $parametros[$autor][] = AutorDAO::encontrarUno($autor);
+
+        foreach ($parametros["autor"] as $autorId) {
+            $parametros["autores"][] = AutorDAO::encontrarUno($autorId);
         }
 
         $Libro = new Libro(
-            id: "",
+            id: $parametros['id'],
             titulo: $parametros['titulo'],
-            autorList: $parametros["autor"],
+            autorList: $parametros["autores"],
             editorial: $parametros["editorial"],
             cant_paginas: $parametros["cant_paginas"],
             anio: $parametros['anio'],
@@ -71,7 +72,8 @@ class LibroController implements InterfaceController
 
     public static function actualizar(array $parametros): array
     {
-        $Libro = Libro::deserializar($parametros);
+        $Libro = LibroDAO::encontrarUno($parametros['id']);
+        $Libro->setTitulo($parametros['titulo']);
         LibroDAO::actualizar($Libro);
         return $Libro->serializar();
     }

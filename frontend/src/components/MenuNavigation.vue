@@ -9,6 +9,7 @@
       <router-link to="/categorias">Categorias</router-link>
       <router-link to="/generos">Generos</router-link>
       <router-link to="/editoriales">Editoriales</router-link>
+      <router-link to="/prestamos">Prestamos</router-link>
     </div>
   </nav>
 </template>

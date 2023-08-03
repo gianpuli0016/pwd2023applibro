@@ -8,25 +8,28 @@ use DateTime;
 
 class Prestamo extends ModelBase
 {
-    private Socio $socio;
-    private Libro $libro;
+    /** @var Libro */
+    private $libro;
+    /** @var Socio */
+    private $socio;
     private DateTime $fecha_desde;
     private DateTime $fecha_hasta;
     private $fecha_dev;
 
     public function __construct(
-        int $id,
-        Socio $socio,
+        ?int $id,
         Libro $libro,
+        Socio $socio,
         DateTime $fecha_desde,
-        DateTime $fecha_hasta
+        DateTime $fecha_hasta,
+        DateTime $fecha_dev = null
     ) {
         parent::__construct($id);
-        $this->socio = $socio;
         $this->libro = $libro;
+        $this->socio = $socio;
         $this->fecha_desde = $fecha_desde;
         $this->fecha_hasta = $fecha_hasta;
-        $this->fecha_dev = null;
+        $this->fecha_dev = $fecha_dev;
     }
 
     public function getSocio(): Socio
@@ -109,21 +112,21 @@ class Prestamo extends ModelBase
             'id' => $this->getId(),
             'socio' => $this->socio->serializar(),
             'libro' => $this->libro->serializar(),
-            'fecha_desde' => $this->fecha_desde->format('Y-m-d H:i:s'),
-            'fecha_hasta' => $this->fecha_hasta->format('Y-m-d H:i:s'),
-            'fecha_dev' => $this->fecha_dev !== null ? $this->fecha_dev->format('Y-m-d H:i:s') : null,
+            'fecha_desde' => $this->fecha_desde->format('Y-m-d'),
+            'fecha_hasta' => $this->fecha_hasta->format('Y-m-d'),
+            'fecha_dev' => $this->fecha_dev !== null ? $this->fecha_dev->format('Y-m-d') : null,
         ];
     }
 
-    public static function deserializar(array $datos): self
+    public static function deserializar(array $datos): ModelBase
     {
-        $id = $datos['id'];
-        $socio = Socio::deserializar($datos['socio']);
-        $libro = Libro::deserializar($datos['libro']);
-        $fecha_desde = DateTime::createFromFormat('Y-m-d H:i:s', $datos['fecha_desde']);
-        $fecha_hasta = DateTime::createFromFormat('Y-m-d H:i:s', $datos['fecha_hasta']);
-        $fecha_dev = isset($datos['fecha_dev']) ? DateTime::createFromFormat('Y-m-d H:i:s', $datos['fecha_dev']) : null;
+        $id = $datos['id'] === null ? 0 : $datos['id'];
+        $socio = $datos['socio'];
+        $libro = $datos['libro'];
+        $fecha_desde = \DateTime::createFromFormat('Y-m-d', $datos['fecha_desde']);
+        $fecha_hasta = \DateTime::createFromFormat('Y-m-d', $datos['fecha_hasta']);
+        $fecha_dev = isset($datos['fecha_dev']) ? DateTime::createFromFormat('Y-m-d', $datos['fecha_dev']) : null;
 
-        return new self($id, $socio, $libro, $fecha_desde, $fecha_hasta, $fecha_dev);
+        return new self($id, $libro, $socio, $fecha_desde, $fecha_hasta, $fecha_dev);
     }
 }

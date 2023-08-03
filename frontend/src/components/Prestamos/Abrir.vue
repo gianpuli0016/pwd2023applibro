@@ -1,30 +1,26 @@
 <template>
-  <div class="socio-details">
-    <h2>Detalles del Socio</h2>
+  <div class="prestamo-details">
+    <h2>Detalles del Prestamo</h2>
 
     <div class="form-group">
-      <label for="nombre_apellido">Nombre y Apellido:</label>
-      <p>{{ Socio.nombre_apellido }}</p>
+      <label for="socio">Socio:</label>
+      <p>{{ Prestamo.socio }}</p>
     </div>
-
     <div class="form-group">
-      <label for="telefono">Teléfono:</label>
-      <p>{{ Socio.telefono }}</p>
+      <label for="libro">Libro:</label>
+      <p>{{ Prestamo.libro }}</p>
     </div>
-
     <div class="form-group">
-      <label for="direccion">Dirección:</label>
-      <p>{{ Socio.direccion }}</p>
+      <label for="fecha_desde">Fecha desde:</label>
+      <p>{{ Prestamo.fecha_desde }}</p>
     </div>
-
     <div class="form-group">
-      <label for="fecha_alta">Fecha de Alta:</label>
-      <p>{{ Socio.fecha_alta }}</p>
+      <label for="fecha_hasta">Fecha hasta:</label>
+      <p>{{ Prestamo.fecha_hasta }}</p>
     </div>
-
     <div class="form-group">
-      <label for="activo">Activo:</label>
-      <p>{{ Socio.activo === 1 ? "Sí" : "No" }}</p>
+      <label for="fecha_dev">Fecha devolucion:</label>
+      <p>{{ Prestamo.fecha_dev }}</p>
     </div>
   </div>
 </template>
@@ -35,13 +31,13 @@ import axios from "axios";
 export default {
   data() {
     return {
-      Socio: {
+      Prestamo: {
         id: "",
-        nombre_apellido: "",
-        direccion: "",
-        telefono: Number(),
-        fecha_alta: new Date().toISOString().substring(0, 10),
-        activo: 1
+        socio: "",
+        libro: "",
+        fecha_desde: "",
+        fecha_hasta: "",
+        fecha_dev: null
       }
     };
   },
@@ -53,9 +49,9 @@ export default {
   methods: {
     async buscar() {
       const res = await axios.get(
-        "http://192.168.20.10/apiv1/socios/" + this.$route.params.id
+        "http://192.168.20.10/apiv1/prestamos/" + this.$route.params.id
       );
-      this.Socio = res.data;
+      this.Prestamo = res.data;
     }
   }
 };
@@ -63,7 +59,7 @@ export default {
 
 <style>
 /* Estilos para los detalles del socio */
-.socio-details {
+.prestamo-details {
   max-width: 400px;
   margin: 0 auto;
   padding: 30px;

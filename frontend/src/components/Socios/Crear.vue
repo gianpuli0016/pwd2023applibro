@@ -51,7 +51,7 @@ export default {
         "http://192.168.20.10/apiv1/socios/nuevo",
         data
       );
-      console.log(res);
+      console.log(res.data);
       this.$router.push("/socios");
     }
   }

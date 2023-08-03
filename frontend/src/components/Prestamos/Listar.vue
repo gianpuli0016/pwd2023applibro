@@ -1,99 +1,108 @@
 <template>
-  <div class="generos-list">
-    <h1 class="list-title">GENEROS</h1>
-    <!-- Botón para crear un nuevo genero -->
-    <button @click="redireccionarACrearGenero" class="btn-crear">Crear Genero</button>
-    <table class="generos-table">
+  <div class="prestamos-list">
+    <h1 class="list-title">PRESTAMOS</h1>
+    <!-- Botón para crear un nuevo Prestamo -->
+    <button @click="redireccionarACrearPrestamo" class="btn-crear">Crear Prestamo</button>
+    <table class="prestamos-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Descripcion</th>
+          <th>Socio</th>
+          <th>Libro</th>
+          <th>Fecha desde</th>
+          <th>Fecha hasta</th>
+          <th>Fecha devolucion</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="genero in generos" :key="genero">
-          <td>{{ genero.id }}</td>
-          <td>{{ genero.descripcion }}</td>
+        <tr v-for="prestamo in prestamos" :key="prestamo">
+          <td>{{ prestamo.id }}</td>
+          <td>{{ prestamo.socio['nombre_apellido'] }}</td>
+          <td>{{ prestamo.libro['titulo'] }}</td>
+          <td>{{ prestamo.fecha_desde }}</td>
+          <td>{{ prestamo.fecha_hasta }}</td>
+          <td>{{ prestamo.fecha_dev }}</td>
           <td>
             <div class="button-group">
-              <button @click="RedicAactualizarGenero(genero.id)" class="btn-button">Actualizar</button>
+              <button @click="RedicAactualizarPrestamo(Prestamo.id)" class="btn-button">Actualizar</button>
 
               <!-- Botón para abrir el diálogo modal -->
-              <button @click="mostrarDialogoBorrado(genero.id)" class="btn-button">Borrar</button>
+              <button @click="mostrarDialogoBorrado(Prestamo.id)" class="btn-button">Borrar</button>
 
               <!-- Diálogo modal -->
               <div v-if="mostrarModal" class="modal-overlay">
                 <div class="modal-content">
                   <h5>Confirmar Borrado</h5>
-                  <p>¿Estás seguro de borrar este genero?</p>
+                  <p>¿Estás seguro de borrar este Prestamo?</p>
                   <div class="modal-buttons">
                     <button @click="cerrarDialogo">Cancelar</button>
-                    <button @click="borrarGenero(genero.id)">Borrar</button>
+                    <button @click="borrarPrestamo(Prestamo.id)">Borrar</button>
                   </div>
                 </div>
               </div>
             </div>
-            <button @click="redicAbrirGenero(genero.id)" class="btn-button">Abrir</button>
+            <button @click="redicAbrirPrestamo(Prestamo.id)" class="btn-button">Abrir</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <!-- Mostrar el formulario de actualización solo si generoIdSeleccionado tiene un valor -->
-    <Actualizar v-if="generoIdSeleccionado" :generoId="generoIdSeleccionado" />
+    <!-- Mostrar el formulario de actualización solo si PrestamoIdSeleccionado tiene un valor -->
+    <Actualizar v-if="prestamoIdSeleccionado" :prestamoId="prestamoIdSeleccionado" />
   </div>
 </template>
 
 <script lang="ts">
 import Boton from "../Boton.vue";
-import UpdateGenero from "./Actualizar.vue";
+import UpdatePrestamo from "./Actualizar.vue";
 import axios from "axios";
 
 export default {
   components: {
-    UpdateGenero,
+    UpdatePrestamo,
     Boton
   },
   props: {},
   data() {
     return {
-      generos: [],
-      generoIdSeleccionado: null, // Variable para almacenar el ID del socio a editar
+      prestamos: [],
+      prestamoIdSeleccionado: null, // Variable para almacenar el ID del socio a editar
       mostrarModal: false
     };
   },
 
   created() {
-    this.listarGeneroes();
+    this.listarPrestamoes();
   },
 
   methods: {
-    redireccionarACrearGenero() {
-      this.$router.push({ name: "CrearGenero" }); // Redireccionar al componente Crear
+    redireccionarACrearPrestamo() {
+      this.$router.push({ name: "CrearPrestamo" }); // Redireccionar al componente Crear
     },
 
-    RedicAactualizarGenero(generoIdSeleccionado: string) {
+    RedicAactualizarPrestamo(prestamoIdSeleccionado: string) {
       this.$router.push({
-        name: "UpdateGenero",
-        params: { id: generoIdSeleccionado }
+        name: "UpdatePrestamo",
+        params: { id: prestamoIdSeleccionado }
       }); // Redireccionar al componente Actualizar
     },
 
-    async listarGeneroes() {
+    async listarPrestamoes() {
       try {
-        const res = await axios.get("http://192.168.20.10/apiv1/generos");
-        this.generos = res.data; // Asignar los datos de los socios a la variable socios
+        const res = await axios.get("http://192.168.20.10/apiv1/prestamos");
+        console.log(res.data);
+        this.prestamos = res.data; // Asignar los datos de los socios a la variable socios
       } catch (error) {
         console.error(error);
       }
     },
 
-    borrarGenero(generoIdSeleccionado: string) {
-      const url = "http://192.168.20.10/apiv1/generos/:id";
+    borrarPrestamo(prestamoIdSeleccionado: string) {
+      const url = "http://192.168.20.10/apiv1/prestamos/:id";
       try {
-        const res = axios.delete(url.replace(":id", generoIdSeleccionado));
-        this.generos = this.generos.filter(
-          genero => genero.id !== generoIdSeleccionado
+        const res = axios.delete(url.replace(":id", prestamoIdSeleccionado));
+        this.prestamos = this.prestamos.filter(
+          prestamo => prestamo.id !== prestamoIdSeleccionado
         );
         this.mostrarModal = false;
       } catch (error) {
@@ -101,18 +110,18 @@ export default {
       }
     },
 
-    mostrarDialogoBorrado(genero) {
-      this.genero = genero;
+    mostrarDialogoBorrado(prestamo) {
+      this.prestamo = prestamo;
       this.mostrarModal = true;
     },
     cerrarDialogo() {
       this.mostrarModal = false;
     },
 
-    redicAbrirGenero(generoIdSeleccionado: string) {
+    redicAbrirPrestamo(prestamoIdSeleccionado: string) {
       this.$router.push({
-        name: "AbrirGenero",
-        params: { id: generoIdSeleccionado }
+        name: "AbrirPrestamo",
+        params: { id: prestamoIdSeleccionado }
       }); // Redireccionar al componente Abrir
     }
   }
@@ -154,7 +163,7 @@ export default {
 }
 
 /* Estilos para la lista*/
-.generos-list {
+.prestamos-list {
   max-width: 800px;
   margin: 0 auto;
   padding: 30px;
@@ -169,28 +178,28 @@ export default {
   text-align: center;
 }
 
-.generos-table {
+.prestamos-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.generos-table th,
-.generos-table td {
+.prestamos-table th,
+.prestamos-table td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
-.generos-table th {
+.prestamos-table th {
   font-weight: bold;
 }
 
-.generos-table tbody tr:hover {
+.prestamos-table tbody tr:hover {
   background-color: #f0f0f0;
 }
 
-.generos-table button {
+.prestamos-table button {
   margin-right: 5px;
   background-color: #65c7ca;
   color: #ffffff;
@@ -200,7 +209,7 @@ export default {
   cursor: pointer;
 }
 
-.generos-table button:hover {
+.prestamos-table button:hover {
   background-color: #4aa9ac;
 }
 

@@ -12,6 +12,7 @@ import CreateAutor from '../components/Autores/Crear.vue';
 import AbrirAutor from '../components/Autores/Abrir.vue';
 
 import ListarLibros from '../components/Libros/Listar.vue';
+import UpdateLibro from '../components/Libros/Actualizar.vue';
 import CreateLibro from '../components/Libros/Crear.vue';
 
 import ListarCategorias from '../components/Categorias/Listar.vue';
@@ -28,6 +29,11 @@ import ListarEditoriales from '../components/Editoriales/Listar.vue';
 import UpdateEditorial from '../components/Editoriales/Actualizar.vue';
 import CreateEditorial from '../components/Editoriales/Crear.vue';
 import AbrirEditorial from '../components/Editoriales/Abrir.vue';
+
+import ListarPrestamos from '../components/Prestamos/Listar.vue';
+import UpdatePrestamo from '../components/Prestamos/Actualizar.vue';
+import CreatePrestamo from '../components/Prestamos/Crear.vue';
+import AbrirPrestamo from '../components/Prestamos/Abrir.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +92,11 @@ const router = createRouter({
             path: '/libros',
             name: 'Libros',
             component: ListarLibros
+        },
+        {
+            path: '/updateLibro/:id',
+            name: 'UpdateLibro',
+            component: UpdateLibro
         }
         ,
         {
@@ -158,6 +169,28 @@ const router = createRouter({
             path: '/abrirEditorial/:id',
             name: 'AbrirEditorial',
             component: AbrirEditorial
+        },
+        {
+            path: '/prestamos',
+            name: 'Prestamos',
+            component: ListarPrestamos
+        },
+        {
+            path: '/updatePrestamo/:id',
+            name: 'UpdatePrestamo',
+            component: UpdatePrestamo
+        }
+        ,
+        {
+            path: '/crearPrestamo',
+            name: 'CrearPrestamo',
+            component: CreatePrestamo
+        }
+        ,
+        {
+            path: '/abrirPrestamo/:id',
+            name: 'AbrirPrestamo',
+            component: AbrirPrestamo
         }
     ]
 })

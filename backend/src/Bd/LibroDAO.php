@@ -22,7 +22,8 @@ class LibroDAO implements InterfaceDAO
             $libro['categoria'] = CategoriaDAO::encontrarUno($libro['id_categoria']);
             $libro['genero'] = GeneroDAO::encontrarUno($libro['id_genero']);
             $libro['editorial'] = EditorialDAO::encontrarUno($libro['id_editorial']);
-            $libro['autor'][] = static::buscarEscritoresporLibro($libro["id"]);
+
+            $libro['autor'] = static::buscarEscritoresporLibro($libro['id']);
 
             $libros[] = Libro::deserializar($libro);
         }
@@ -32,13 +33,15 @@ class LibroDAO implements InterfaceDAO
     public static function buscarEscritoresporLibro($id)
     {
         $sql = 'SELECT id_autor FROM autores_libros WHERE id_libro =:id;';
-        $autores = ConectarBD::leer(sql: $sql, params: [':id' => $id]);
+        $autores_ids = ConectarBD::leer(sql: $sql, params: [':id' => $id]);
+        $autores = [];
 
-        if (count($autores) === 0) {
-            return null;
-        } else {
-            return $autor[] =  AutorDAO::encontrarUno($autores[0]["id_autor"]);
+        foreach ($autores_ids as $autor_id) {
+            $autor = AutorDAO::encontrarUno($autor_id['id_autor']);
+            $autores[] = $autor;
         }
+
+        return $autores;
     }
 
     public static function encontrarUno(string $id): ?libro
@@ -52,11 +55,7 @@ class LibroDAO implements InterfaceDAO
             $libro[0]['categoria'] = CategoriaDAO::encontrarUno($libro[0]['id_categoria']);
             $libro[0]['genero'] = GeneroDAO::encontrarUno($libro[0]['id_genero']);
             $libro[0]['editorial'] = EditorialDAO::encontrarUno($libro[0]['id_editorial']);
-            $autoresLibros[] = static::buscarEscritoresporLibro($libro[0]["id"]);
-
-            foreach ($autoresLibros as $autor) {
-                $libro[0]["autor"][] = $autor;
-            }
+            $libro[0]['autor'] = static::buscarEscritoresporLibro($libro[0]['id']);
 
             $libro = Libro::deserializar($libro[0]);
             return $libro;
@@ -72,12 +71,12 @@ class LibroDAO implements InterfaceDAO
             sql: $sql,
             params: [
                 ':titulo' => $params['titulo'],
-                ':id_genero' => $params['genero']->getId(),
-                ':id_categoria' => $params['categoria']->getId(),
+                ':id_genero' => $params['genero']['id'],
+                ':id_categoria' => $params['categoria']['id'],
                 ':cant_paginas' => $params['cant_paginas'],
                 ':anio' => $params['anio'],
                 ':estado' => $params['estado'],
-                ':id_editorial' => $params['editorial']->getId(),
+                ':id_editorial' => $params['editorial']['id'],
             ]
         );
 
@@ -88,7 +87,7 @@ class LibroDAO implements InterfaceDAO
                 sql: $sql,
                 params: [
                     ':id_libro' => static::buscarUltimoLibro(),
-                    ':id_autor' => $autor[0],
+                    ':id_autor' => $autor['id']
                 ]
             );
         }
@@ -97,12 +96,12 @@ class LibroDAO implements InterfaceDAO
     public static function actualizar(Serializador $instancia): void
     {
         $params = $instancia->serializar();
-        $sql = 'UPDATE libros SET nombre =:nombre WHERE id=:id';
+        $sql = 'UPDATE libros SET titulo =:titulo WHERE id=:id';
         ConectarBD::escribir(
             sql: $sql,
             params: [
                 ':id' => $params['id'],
-                ':nombre' => $params['nombre'],
+                ':titulo' => $params['titulo'],
             ]
         );
     }

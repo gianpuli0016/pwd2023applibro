@@ -2,10 +2,10 @@
 
 namespace Raiz\Controllers;
 
+use DateTime;
 use Raiz\Bd\LibroDAO;
 use Raiz\Bd\PrestamoDAO;
-use Raiz\Models\prestamo;
-use Raiz\Models\Socio;
+use Raiz\Models\Prestamo;
 use Raiz\Bd\SocioDAO;
 
 
@@ -13,14 +13,6 @@ use Raiz\Bd\SocioDAO;
 
 class PrestamoController implements InterfaceController
 {
-
-    //Clase que controla de acuerdo a lo que pida la vista: 
-    // --- CRUD --- 
-    //  Listar 
-    //  encontrar uno
-    //  crear
-    //  actualizar
-    //  borrar  
 
     public static function listar(): array
     {
@@ -76,12 +68,12 @@ class PrestamoController implements InterfaceController
 
         $prestamo = new Prestamo(
             id: null,
-            socio: $parametros['socio'],
             libro: $parametros["libro"],
-            fecha_desde: $parametros["fecha_desde"],
-            fecha_hasta: $parametros["fecha_hasta"]
+            socio: $parametros['socio'],
+            fecha_desde: new DateTime($parametros["fecha_desde"]),
+            fecha_hasta: new DateTime($parametros["fecha_hasta"])
         );
-        PrestamoDAO::crear($prestamo);
+
         return $prestamo->serializar();
     }
 

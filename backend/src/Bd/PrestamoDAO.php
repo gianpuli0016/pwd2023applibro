@@ -15,33 +15,35 @@ class PrestamoDAO implements InterfaceDAO
     public static function listar(): array
     {
         $sql = 'SELECT * FROM prestamos';
-        $listaPrestamos = ConectarBD::leer(sql: $sql);
+        $cnx = ConectarBD::conectar();
+        $consulta = $cnx->prepare($sql);
+        $consulta->execute();
+        $listaPrestamos = $consulta->fetchAll(PDO::FETCH_ASSOC);
         $prestamos = [];
         foreach ($listaPrestamos as $prestamo) {
+            $prestamo['socio'] = SocioDAO::encontrarUno($prestamo['id_socio']);
+            $prestamo['libro'] = LibroDAO::encontrarUno($prestamo['id_libro']);
+
             $prestamos[] = Prestamo::deserializar($prestamo);
         }
+
         return $prestamos;
     }
 
     public static function crear(Serializador $instancia): void
     {
         $params = $instancia->serializar();
-        $sql = 'INSERT INTO prestamos (socio, libro, fecha_desde, fecha_hasta, fecha_dev) 
-        VALUES (:id_socio, :id_libro, :fecha_desde, :fecha_hasta, :fecha_dev);';
+        $sql = 'INSERT INTO prestamos (id_libro, id_socio, fecha_desde, fecha_hasta) 
+        VALUES (:id_libro, :id_socio, :fecha_desde, :fecha_hasta);';
         ConectarBD::escribir(
             sql: $sql,
             params: [
-                ':id_socio' => $params['socio']->getId(),
-                ':id_libro' => $params['libro']->getId(),
+                ':id_libro' => $params['libro']['id'],
+                ':id_socio' => $params['socio']['id'],
                 ':fecha_desde' => $params['fecha_desde'],
-                ':fecha_hasta' => $params['fecha_hasta'],
-                ':fecha_dev' => $params['fecha_dev']
+                ':fecha_hasta' => $params['fecha_hasta']
             ]
         );
-
-        // Cambiar el estado del libro a "Prestado"
-        $idLibro = $params['libro']->getId();
-        LibroDAO::actualizarEstado($idLibro, 'Prestado');
     }
 
     public static function encontrarUno(string $id): ?Prestamo
@@ -62,7 +64,7 @@ class PrestamoDAO implements InterfaceDAO
 
         if ($prestamo !== null) {
             $libro = $prestamo->getLibro();
-            $id_libro = $libro->getId();
+            $id_libro = $libro[0]->getId();
             $diasRetraso = $prestamo->diasRetraso($id_libro);
             return $diasRetraso;
         }

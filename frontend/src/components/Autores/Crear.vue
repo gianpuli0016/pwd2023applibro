@@ -27,7 +27,7 @@ export default {
   },
 
   methods: {
-    async createAutor(Autor) {
+    async createAutor(Autor: any) {
       const data = {
         id: Number(Autor.id),
         nombre_apellido: Autor.nombre_apellido

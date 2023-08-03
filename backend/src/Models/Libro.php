@@ -9,12 +9,12 @@ class Libro extends ModelBase
     private string $titulo;
     /** @var Editorial */
     private $editorial;
-    /** @var array Autor */
-    private array $autor;
+    /** @var Autor */
+    private $autor;
     /** @var Genero */
     private $genero;
     /** @var Categoria */
-    private string $categoria;
+    private $categoria;
     private int $cant_paginas;
     private int $anio;
     private string $estado;
@@ -72,11 +72,22 @@ class Libro extends ModelBase
     public function getAutores(): array
     {
         $listaAutores = [];
+
         foreach ($this->autor as $autor) {
-            $listaAutores = $autor->serializar();
+            $listaAutores[] = $autor->serializar();
         }
         return $listaAutores;
     }
+
+    //public function getAutores(): array
+    //{
+    //    $listaAutores = [];
+    //    foreach ($this->autor as $autorIndex) {
+    //        $listaAutores = $autorIndex->serializar();
+    //    }
+    //    return $listaAutores;
+    //}
+
     public function getEstado(): string
     {
         return $this->estado;

@@ -21,17 +21,21 @@
       <tbody>
         <tr v-for="libro in libros" :key="libro">
           <td>{{ libro.id }}</td>
-          <td>{{ libro.autor }}</td>
           <td>{{ libro.titulo }}</td>
-          <td>{{ libro.id_genero }}</td>
-          <td>{{ libro.id_categoria }}</td>
+          <td>
+            <span v-for="(autor, index) in libro.autor" :key="index">
+              <div>{{ autor['nombre_apellido'] }}</div>
+            </span>
+          </td>
+          <td>{{ libro.genero['descripcion'] }}</td>
+          <td>{{ libro.categoria['descripcion'] }}</td>
           <td>{{ libro.cant_paginas }}</td>
           <td>{{ libro.anio }}</td>
           <td>{{ libro.estado }}</td>
-          <td>{{ libro.id_editorial }}</td>
+          <td>{{ libro.editorial['nombre'] }}</td>
           <td>
             <div class="button-group">
-              <button @click="RedicAactualizarLibro(libro.id)" class="btn-button">Actualizar</button>
+              <button @click="RedicActualizarLibro(libro.id)" class="btn-button">Actualizar</button>
               <div>
                 <!-- Botón para abrir el diálogo modal -->
                 <button @click="mostrarDialogoBorrado(libro.id)" class="btn-button">Borrar</button>
@@ -63,10 +67,12 @@
 import Boton from "../Boton.vue";
 //import UpdateLibro from "./Actualizar.vue";
 import axios from "axios";
+import UpdateLibro from "./Actualizar.vue";
 
 export default {
   components: {
-    Boton
+    Boton,
+    UpdateLibro
   },
   props: {},
   data() {
@@ -86,7 +92,7 @@ export default {
       this.$router.push({ name: "CrearLibro" }); // Redireccionar al componente Crear
     },
 
-    RedicAactualizarLibro(libroIdSeleccionado: string) {
+    RedicActualizarLibro(libroIdSeleccionado: string) {
       this.$router.push({
         name: "UpdateLibro",
         params: { id: libroIdSeleccionado }
@@ -96,6 +102,8 @@ export default {
     async listarLibros() {
       try {
         const res = await axios.get("http://192.168.20.10/apiv1/libros");
+
+        console.log(res);
         this.libros = res.data; // Asignar los datos de los libros a la variable libros
       } catch (error) {
         console.error(error);
@@ -170,7 +178,7 @@ export default {
 /* Estilos para la lista de libros */
 .libros-list {
   display: inline-block;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 30px;
   font-family: Arial, sans-serif;
